@@ -1,0 +1,80 @@
+name: Check upstream versions
+
+on:
+  schedule:
+    - cron: '30 6 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: check-upstream
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+env:
+  ALPINE_VERSION: "3.23"
+  BRANCH: upstream-updates
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Check upstream
+        id: check
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          CHANGED_FILE=changed.txt sh scripts/check-upstream.sh report.md
+          cat report.md >> "$GITHUB_STEP_SUMMARY"
+          cat report.md
+          echo "changed=$(cat changed.txt)" >> "$GITHUB_OUTPUT"
+          if grep -q '^## Needs attention' report.md; then
+            echo "::warning::Some packages need a manual update; see the job summary"
+          fi
+
+      - name: Update checksums
+        if: steps.check.outputs.changed != ''
+        run: sh scripts/update-checksums.sh ${{ steps.check.outputs.changed }}
+
+      # Pull requests opened with GITHUB_TOKEN don't start other workflows,
+      # so build and test here, before opening one
+      - name: Build (throwaway key)
+        if: steps.check.outputs.changed != ''
+        run: sh scripts/build-in-docker.sh out
+
+      - name: Install test
+        if: steps.check.outputs.changed != ''
+        run: sh scripts/install-test.sh out
+
+      - name: Open or update the pull request
+        if: steps.check.outputs.changed != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          {
+            cat report.md
+            echo
+            echo "---"
+            echo "Built and test-installed by the [Check upstream versions run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+            echo "Review the checksum changes: they are where the new sources are trusted."
+            echo "Merging publishes the packages."
+          } > pr-body.md
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          git add packages
+          { echo "Upstream updates: ${{ steps.check.outputs.changed }}"; echo; cat report.md; } > commit-msg.txt
+          git commit -q -F commit-msg.txt
+          git push -f origin "$BRANCH"
+          pr=$(gh pr list --head "$BRANCH" --state open --json number -q '.[0].number')
+          if [ -n "$pr" ]; then
+            gh pr edit "$pr" --title "Upstream updates: ${{ steps.check.outputs.changed }}" --body-file pr-body.md
+            echo "Updated pull request #$pr"
+          else
+            gh pr create --base main --head "$BRANCH" \
+              --title "Upstream updates: ${{ steps.check.outputs.changed }}" --body-file pr-body.md
+          fi

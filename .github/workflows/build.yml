@@ -35,20 +35,7 @@ jobs:
             "alpine:$ALPINE_VERSION" sh /repo/scripts/build.sh /out
 
       - name: Install test
-        run: |
-          docker run --rm -v "$PWD/out":/repo:ro "alpine:$ALPINE_VERSION" sh -c '
-            set -e
-            cp /repo/*.rsa.pub /etc/apk/keys/
-            echo /repo/m17 >> /etc/apk/repositories
-            apk add -q --no-cache rpi-dashboard m17-gateway-openrc m17-firmware-cc1200 \
-              m17-firmware-mmdvm m17-firmware-mmdvm-hs m17-sx1255-overlay
-            /opt/m17/m17-gateway/m17-gateway -h 2>&1 | grep -q -- -config
-            test -f /etc/m17-gateway/m17-gateway.ini
-            test -L /etc/m17-gateway.ini
-            su -s /bin/sh www-data -c "test -w /etc/m17-gateway.ini && test -w /var/lib/m17-gateway/M17Hosts.txt"
-            test -f /boot/firmware/overlays/genericstereoaudiocodec.dtbo
-            apk info -v | grep -E "m17|rpi-dashboard" | sort
-          '
+        run: sh scripts/install-test.sh out
 
       - name: Arrange the site
         if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'

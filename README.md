@@ -50,6 +50,14 @@ A local build is signed with a throwaway key whose public half is put in `out/`.
 
 m17-gateway is built with `GOTOOLCHAIN=auto` because its `go.mod` asks for a newer Go than Alpine 3.23 ships; the toolchain and modules are verified against the Go checksum database.
 
+### Upstream updates
+
+A daily workflow ([`check-upstream.yml`](.github/workflows/check-upstream.yml), also runnable by hand) runs `scripts/check-upstream.sh` to find newer upstream versions: a new release of m17-gateway or the CC1200 firmware, a new rpi-dashboard commit, or a new commit that changed the MMDVM / MMDVM_HS `release/` folder or the SX1255 overlay. It updates the APKBUILDs, recomputes the checksums, builds and test-installs everything, then opens (or updates) one "Upstream updates" pull request. Merging it publishes the packages; m17-hotspot-os's weekly check then builds a new OS release with them.
+
+If a firmware repository adds or removes a board's file, the pull request (or the run's summary) says so: those lists are updated by hand. Snapshot versions never go down: a second commit on the same day bumps `pkgrel`.
+
+Pull requests opened by the workflow don't start the build workflow (GitHub doesn't let one workflow's `GITHUB_TOKEN` trigger another), which is why the check builds and tests before opening one.
+
 ### Signing key
 
 The index is signed with an abuild RSA key. The public key is [`keys/m17-apk.rsa.pub`](keys/m17-apk.rsa.pub); the private key is the repository secret `ABUILD_PRIVATE_KEY`.
