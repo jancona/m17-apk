@@ -1,0 +1,57 @@
+# Maintainer: Jim Ancona, N1ADJ <jancona@users.noreply.github.com>
+pkgname=m17-firmware-mmdvm
+_commit=c27063a9acee11bf29084ab70962e81b510f1594
+pkgver=0_git20251015
+pkgrel=0
+pkgdesc="MMDVM modem firmware with M17 (Repeater-Builder, MMDVM_RPT_Hat, ZUM MMDVM-Pi, Nucleo boards)"
+url="https://github.com/M17-Project/MMDVM"
+arch="noarch"
+license="GPL-2.0-or-later"
+source="
+	Repeater-Builder_v3.bin::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/release/Repeater-Builder_v3.bin
+	Repeater-Builder_v4.bin::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/release/Repeater-Builder_v4.bin
+	Repeater-Builder_v5.bin::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/release/Repeater-Builder_v5.bin
+	Repeater-Builder_MTR2K_v3-405.bin::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/release/Repeater-Builder_MTR2K_v3-405.bin
+	Repeater-Builder_MTR2K_v3-446.bin::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/release/Repeater-Builder_MTR2K_v3-446.bin
+	MMDVM_RPT_Hat_0.2.bin::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/release/MMDVM_RPT_Hat_0.2.bin
+	MMDVM_RPT_Hat_0.3.bin::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/release/MMDVM_RPT_Hat_0.3.bin
+	ZUM_MMDVM-Pi_0.9-F4.bin::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/release/ZUM_MMDVM-Pi_0.9-F4.bin
+	ZUM_MMDVM-Pi_1.0-F4.bin::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/release/ZUM_MMDVM-Pi_1.0-F4.bin
+	ZUM_MMDVM-Pi_1.0-F7.bin::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/release/ZUM_MMDVM-Pi_1.0-F7.bin
+	F446RE.elf::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/release/F446RE.elf
+	F767ZI.elf::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/release/F767ZI.elf
+	$pkgname-LICENCE::https://raw.githubusercontent.com/M17-Project/MMDVM/$_commit/LICENCE
+	"
+options="!check !archcheck !strip !tracedeps"  # prebuilt firmware for the HAT's microcontroller, not for the Pi
+
+package() {
+	install -Dm644 "$srcdir"/Repeater-Builder_v3.bin "$pkgdir"/usr/share/m17-firmware/mmdvm/Repeater-Builder_v3.bin
+	install -Dm644 "$srcdir"/Repeater-Builder_v4.bin "$pkgdir"/usr/share/m17-firmware/mmdvm/Repeater-Builder_v4.bin
+	install -Dm644 "$srcdir"/Repeater-Builder_v5.bin "$pkgdir"/usr/share/m17-firmware/mmdvm/Repeater-Builder_v5.bin
+	install -Dm644 "$srcdir"/Repeater-Builder_MTR2K_v3-405.bin "$pkgdir"/usr/share/m17-firmware/mmdvm/Repeater-Builder_MTR2K_v3-405.bin
+	install -Dm644 "$srcdir"/Repeater-Builder_MTR2K_v3-446.bin "$pkgdir"/usr/share/m17-firmware/mmdvm/Repeater-Builder_MTR2K_v3-446.bin
+	install -Dm644 "$srcdir"/MMDVM_RPT_Hat_0.2.bin "$pkgdir"/usr/share/m17-firmware/mmdvm/MMDVM_RPT_Hat_0.2.bin
+	install -Dm644 "$srcdir"/MMDVM_RPT_Hat_0.3.bin "$pkgdir"/usr/share/m17-firmware/mmdvm/MMDVM_RPT_Hat_0.3.bin
+	install -Dm644 "$srcdir"/ZUM_MMDVM-Pi_0.9-F4.bin "$pkgdir"/usr/share/m17-firmware/mmdvm/ZUM_MMDVM-Pi_0.9-F4.bin
+	install -Dm644 "$srcdir"/ZUM_MMDVM-Pi_1.0-F4.bin "$pkgdir"/usr/share/m17-firmware/mmdvm/ZUM_MMDVM-Pi_1.0-F4.bin
+	install -Dm644 "$srcdir"/ZUM_MMDVM-Pi_1.0-F7.bin "$pkgdir"/usr/share/m17-firmware/mmdvm/ZUM_MMDVM-Pi_1.0-F7.bin
+	install -Dm644 "$srcdir"/F446RE.elf "$pkgdir"/usr/share/m17-firmware/mmdvm/F446RE.elf
+	install -Dm644 "$srcdir"/F767ZI.elf "$pkgdir"/usr/share/m17-firmware/mmdvm/F767ZI.elf
+	install -Dm644 "$srcdir"/$pkgname-LICENCE "$pkgdir"/usr/share/licenses/$pkgname/LICENCE
+}
+
+sha512sums="
+c6a16012af110c6b8b1cf7fa386e13e11ba9351588b39cf892a9dc503370600e84f48f04217557f68368371513e11e241c46bd2d3f6dc404aca8a2515d197f1d  Repeater-Builder_v3.bin
+2eaaf33fe63c463a5f03d074af0f84bbb29834c0f0466ceebb0e6e62753e22689b4fe6bd57e68fc84e3f6628c2b99e15347243809c733c273249bdb304e649e4  Repeater-Builder_v4.bin
+453a14886fea4b5ab6e031abfae92a7523614658c4463d4f83d8ad92a9b04af7607321e124970c40f02c406338a5e80781f5d9b1e4e396aef69ac47d9b1aa7d1  Repeater-Builder_v5.bin
+a14c4f694455daad2e505ef62b83679e017dbe88722e7705f4106605e464b0cd519fd1e62b7736f9eceed1b0fec0ecbaa89f52b8195ad7b2d85f6240d1f000a7  Repeater-Builder_MTR2K_v3-405.bin
+bb8b0fcb8ff5e83f55a4cc85b6e59252080aafef0aab573458370302a729112e0176b0da8dc4bff906e889e99c43d8e1a8afeb7f04b989d757ccefe04a430486  Repeater-Builder_MTR2K_v3-446.bin
+b134569f4997a9d1a3dade7a3856e4bb85a1efe0f006355a58185a417802981b6bb5a471111035e67117990bd95676d66c8554d382119a9a67b3ea7198227966  MMDVM_RPT_Hat_0.2.bin
+ae816acfe5f844b692c1b60a08950e2d3516221500eaa3cebcc48ea1d89b339a5352a291eae23980432956b252542aa53ad602582a98ffb7ef51ae0c0ed8432a  MMDVM_RPT_Hat_0.3.bin
+d283a8dbff053ddedf9bcda29ef1180f537376d1702cba7fce29035683fb3fada9826ff4209a3df8785ba7c87f53317412b10879fae2020fe44e53e5def31f60  ZUM_MMDVM-Pi_0.9-F4.bin
+d7150d937289b79469928ec64484e84fcd1d208ece3c4d0ce1d3c7f41c6bf24b170c53d827899c1939cfa9e37ac18769796dd371429dc2b1375217f5cd67faee  ZUM_MMDVM-Pi_1.0-F4.bin
+f3f5554358f423cdb89557d4e2930666e3399e5daa49bdc7371cae1ec8fd92473ef87d930ced1f436e257fe4d16251b4cd622bc44b7d9108814cdb96121d9896  ZUM_MMDVM-Pi_1.0-F7.bin
+a8a89ca1c4019f05a9d706f78bd68f6b9d28f1e97bd54d398700e0ea8f01c8dd1d05a418d178e1f03eb038634320724378b8d09f70b8b9381fb317d563ac0199  F446RE.elf
+e5bfa68ba9a5247f75e3e0679f527f17f5bb5981f977889dd9d7e5b8b3324f52dd09fa6ac57509e80177f2fa20867989babe04bf1ee7c94b25cf9c3afe66f299  F767ZI.elf
+b94f571dda83fb3adee5789b8ae838fc458af73724e379bd67283aa7e687b5ab49d147fa4f0199492a0d377c6afd724293838c67c7c1a120b759250a74f70a78  m17-firmware-mmdvm-LICENCE
+"

@@ -1,0 +1,39 @@
+# Maintainer: Jim Ancona, N1ADJ <jancona@users.noreply.github.com>
+pkgname=m17-firmware-mmdvm-hs
+_commit=20488ec36dac9206fda8cb037da26d4dc6204213
+pkgver=0_git20261117
+pkgrel=0
+pkgdesc="MMDVM_HS hotspot firmware with M17 (MMDVM_HS_Hat, MMDVM_HS_Dual_Hat, generic GPIO boards)"
+url="https://github.com/M17-Project/MMDVM_HS"
+arch="noarch"
+license="GPL-2.0-or-later"
+source="
+	MMDVM_HS_Hat.bin::https://raw.githubusercontent.com/M17-Project/MMDVM_HS/$_commit/release/MMDVM_HS_Hat.bin
+	MMDVM_HS_Hat-12mhz.bin::https://raw.githubusercontent.com/M17-Project/MMDVM_HS/$_commit/release/MMDVM_HS_Hat-12mhz.bin
+	MMDVM_HS_Dual_Hat.bin::https://raw.githubusercontent.com/M17-Project/MMDVM_HS/$_commit/release/MMDVM_HS_Dual_Hat.bin
+	MMDVM_HS_Dual_Hat-12mhz.bin::https://raw.githubusercontent.com/M17-Project/MMDVM_HS/$_commit/release/MMDVM_HS_Dual_Hat-12mhz.bin
+	generic_gpio.bin::https://raw.githubusercontent.com/M17-Project/MMDVM_HS/$_commit/release/generic_gpio.bin
+	generic_duplex_gpio.bin::https://raw.githubusercontent.com/M17-Project/MMDVM_HS/$_commit/release/generic_duplex_gpio.bin
+	$pkgname-LICENCE::https://raw.githubusercontent.com/M17-Project/MMDVM_HS/$_commit/LICENCE
+	"
+options="!check !archcheck !strip !tracedeps"  # prebuilt firmware for the HAT's microcontroller, not for the Pi
+
+package() {
+	install -Dm644 "$srcdir"/MMDVM_HS_Hat.bin "$pkgdir"/usr/share/m17-firmware/mmdvm_hs/MMDVM_HS_Hat.bin
+	install -Dm644 "$srcdir"/MMDVM_HS_Hat-12mhz.bin "$pkgdir"/usr/share/m17-firmware/mmdvm_hs/MMDVM_HS_Hat-12mhz.bin
+	install -Dm644 "$srcdir"/MMDVM_HS_Dual_Hat.bin "$pkgdir"/usr/share/m17-firmware/mmdvm_hs/MMDVM_HS_Dual_Hat.bin
+	install -Dm644 "$srcdir"/MMDVM_HS_Dual_Hat-12mhz.bin "$pkgdir"/usr/share/m17-firmware/mmdvm_hs/MMDVM_HS_Dual_Hat-12mhz.bin
+	install -Dm644 "$srcdir"/generic_gpio.bin "$pkgdir"/usr/share/m17-firmware/mmdvm_hs/generic_gpio.bin
+	install -Dm644 "$srcdir"/generic_duplex_gpio.bin "$pkgdir"/usr/share/m17-firmware/mmdvm_hs/generic_duplex_gpio.bin
+	install -Dm644 "$srcdir"/$pkgname-LICENCE "$pkgdir"/usr/share/licenses/$pkgname/LICENCE
+}
+
+sha512sums="
+3b4226d9260e0abe98569435ea0dc97c3ea7dcb9e73a8c60b51d1de1a227a8e22ce4c55c41dad0a0447dfc484b64bb1dd0e35e6e2770028930e32513f6d9ef33  MMDVM_HS_Hat.bin
+d32658ca1a3da6b163fd0eb16f5d307b04f31f0580e2333d035d4e279ef812130e677ad8ad0c4534bcfc10e563c79ba9ae747ed4872eb406c8c9d6f6e3b9fa18  MMDVM_HS_Hat-12mhz.bin
+edcb916f8cbd0f78ae872fe12babd9c8351bac98fd968ba9fefefb48d5ee6ed680e6a34ac9d53c3ee0d94b141c98e958c834ab162ea3017484ae58c784c80980  MMDVM_HS_Dual_Hat.bin
+64eec3b9a4382e655f7716ed4b59191e5b194095622da81b169cb3f23e540780fd30ec14ab2739f36ee0bd6c71017020db41d9f3e52c6795779bc91d0c3775ef  MMDVM_HS_Dual_Hat-12mhz.bin
+5501eef02b826cf8580b26c1bec572a7f210c26ecf562e5484aee152201a4de18ea679d21f92b85bf986f43f222bdce30385cb5dfce731238467a3d5b51ff6bb  generic_gpio.bin
+b7b33797f58b2955951269677c856e2d0cb61de807e6814415bbde2cb74f792a61e8490440cee2429d82856e5850b22c1d37ad21a653370c36566a681b7ea250  generic_duplex_gpio.bin
+b94f571dda83fb3adee5789b8ae838fc458af73724e379bd67283aa7e687b5ab49d147fa4f0199492a0d377c6afd724293838c67c7c1a120b759250a74f70a78  m17-firmware-mmdvm-hs-LICENCE
+"

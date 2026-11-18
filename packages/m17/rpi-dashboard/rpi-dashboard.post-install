@@ -1,0 +1,27 @@
+#!/bin/sh
+# The dashboard's writable state: config.php and files/. The package's
+# /opt/m17/rpi-dashboard/config.php and files/ are symlinks to here, so
+# upgrades replace the code and keep the settings.
+STATE=/var/lib/m17-dashboard
+mkdir -p "$STATE/files"
+[ -e "$STATE/config.php" ] || : > "$STATE/config.php"
+
+# The gateway's files, seen through the names the dashboard expects. The
+# host files are the gateway's own copies, so the dashboard's "Update
+# hostfile" button updates what the gateway reads.
+link() { [ -e "$2" ] || [ -L "$2" ] || ln -s "$1" "$2"; }
+link /var/log/m17-gateway/dashboard.log "$STATE/files/dashboard.log"
+link /etc/m17-gateway.ini "$STATE/files/m17-gateway.ini"
+link /var/lib/m17-gateway/M17Hosts.txt "$STATE/files/M17Hosts.txt"
+link /var/lib/m17-gateway/OverrideHosts.txt "$STATE/files/OverrideHosts.txt"
+
+chown www-data:www-data "$STATE" "$STATE/files" "$STATE/config.php"
+chmod 0775 "$STATE" "$STATE/files"
+chmod 0664 "$STATE/config.php"
+
+if ! grep -q "admin_password_hash' => '[^']" "$STATE/config.php" 2>/dev/null; then
+	echo "Set the dashboard admin password with:"
+	echo "  doas -u www-data php84 /opt/m17/rpi-dashboard/set_password.php"
+	echo "An nginx site for the dashboard is in /usr/share/rpi-dashboard/nginx-site.conf"
+fi
+exit 0

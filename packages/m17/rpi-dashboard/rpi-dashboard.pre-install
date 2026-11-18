@@ -1,0 +1,9 @@
+#!/bin/sh
+# The dashboard runs as www-data (PHP-FPM) and may edit m17-gateway's
+# configuration and host files through the m17-gateway-control group
+addgroup -S www-data 2>/dev/null
+getent passwd www-data >/dev/null || \
+	adduser -S -D -H -h /var/www -s /sbin/nologin -G www-data www-data 2>/dev/null
+addgroup -S m17-gateway-control 2>/dev/null
+addgroup www-data m17-gateway-control 2>/dev/null
+exit 0

@@ -1,0 +1,32 @@
+#!/bin/sh
+# Create the configuration the first time, from the packaged defaults.
+# It lives in /etc/m17-gateway/ (one directory, easy to keep on a separate
+# partition); /etc/m17-gateway.ini is where the gateway and the dashboard
+# look for it, as on Debian.
+CONF_DIR=/etc/m17-gateway
+INI=$CONF_DIR/m17-gateway.ini
+STATE=/var/lib/m17-gateway
+SHARE=/usr/share/m17-gateway
+
+mkdir -p "$CONF_DIR" "$STATE"
+for f in M17Hosts.txt OverrideHosts.txt; do
+	[ -e "$STATE/$f" ] || cp "$SHARE/$f" "$STATE/$f"
+done
+chown -R m17-gateway:m17-gateway-control "$STATE"
+chmod 0775 "$STATE"
+chmod 0664 "$STATE"/*.txt
+
+if [ ! -e "$INI" ]; then
+	# Comments with ';', as the Debian package does for its INI parser
+	sed -e 's/^#/;/' \
+	    -e 's|^DashboardLog=.*|DashboardLog=/var/log/m17-gateway/dashboard.log|' \
+	    -e 's|^HostFile=.*|HostFile=/var/lib/m17-gateway/M17Hosts.txt|' \
+	    -e 's|^OverrideHostFile=.*|OverrideHostFile=/var/lib/m17-gateway/OverrideHosts.txt|' \
+	    "$SHARE/m17-gateway.ini.sample" > "$INI"
+	chown m17-gateway:m17-gateway-control "$INI"
+	chmod 0664 "$INI"
+	echo "Created $INI: set your callsign and modem there, then"
+	echo "  rc-update add m17-gateway && rc-service m17-gateway start"
+fi
+[ -e /etc/m17-gateway.ini ] || [ -L /etc/m17-gateway.ini ] || ln -s m17-gateway/m17-gateway.ini /etc/m17-gateway.ini
+exit 0

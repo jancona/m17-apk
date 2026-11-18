@@ -1,0 +1,23 @@
+# Maintainer: Jim Ancona, N1ADJ <jancona@users.noreply.github.com>
+pkgname=m17-firmware-cc1200
+pkgver=2.3
+pkgrel=0
+pkgdesc="Firmware for the M17 CC1200 HAT"
+url="https://github.com/M17-Project/CC1200_HAT-fw"
+arch="noarch"
+license="GPL-3.0-only"
+source="
+	CC1200_HAT-fw-$pkgver.bin::https://github.com/M17-Project/CC1200_HAT-fw/releases/download/v$pkgver/CC1200_HAT-fw.bin
+	$pkgname-LICENSE::https://raw.githubusercontent.com/M17-Project/CC1200_HAT-fw/v$pkgver/LICENSE
+	"
+options="!check !archcheck !strip !tracedeps"  # prebuilt firmware for the HAT's microcontroller, not for the Pi
+
+package() {
+	install -Dm644 "$srcdir"/CC1200_HAT-fw-$pkgver.bin "$pkgdir"/usr/share/m17-firmware/cc1200/CC1200_HAT-fw.bin
+	install -Dm644 "$srcdir"/$pkgname-LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+sha512sums="
+ec07282b079f8adef8aca3bacd53d7c61767dd0fbfeed91324b381c1294ffcb07cc4be4954c0ccc89c29453acb2ce40a7a5272c88c684dd0d956912051ded885  CC1200_HAT-fw-2.3.bin
+d361e5e8201481c6346ee6a886592c51265112be550d5224f1a7a6e116255c2f1ab8788df579d9b8372ed7bfd19bac4b6e70e00b472642966ab5b319b99a2686  m17-firmware-cc1200-LICENSE
+"

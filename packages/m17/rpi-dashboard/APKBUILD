@@ -1,0 +1,42 @@
+# Maintainer: Jim Ancona, N1ADJ <jancona@users.noreply.github.com>
+pkgname=rpi-dashboard
+_commit=57cd8591da9cd68b313c7352111b717ca8ca12b4
+pkgver=1.4.1_git20261108
+pkgrel=0
+pkgdesc="Web dashboard for M17 hotspots running m17-gateway"
+url="https://github.com/M17-Project/rpi-dashboard"
+arch="noarch"
+license="GPL-3.0-only"
+# pgrep from procps: BusyBox pgrep -x does not find the gateway by name
+depends="m17-gateway php84 php84-fpm php84-session php84-opcache php84-ctype php84-mbstring procps curl"
+install="$pkgname.pre-install $pkgname.post-install"
+source="$pkgname-$_commit.tar.gz::https://github.com/M17-Project/rpi-dashboard/archive/$_commit.tar.gz
+	nginx-site.conf
+	"
+builddir="$srcdir/$pkgname-$_commit"
+# !check: PHP only, no test suite. !fhs: installed under /opt/m17, the
+# path the Debian installer uses and the dashboard's help text describes
+options="!check !fhs"
+
+package() {
+	local dest="$pkgdir"/opt/m17/rpi-dashboard
+	mkdir -p "$dest"
+	cp -r ./* "$dest"/
+	rm -f "$dest"/.gitignore
+	find "$dest" -type d -exec chmod 755 {} +
+	find "$dest" -type f -exec chmod 644 {} +
+
+	# The dashboard writes config.php and files/; they live in
+	# /var/lib/m17-dashboard (created by post-install, kept on upgrade)
+	rm -rf "$dest"/files "$dest"/config.php
+	ln -s /var/lib/m17-dashboard/config.php "$dest"/config.php
+	ln -s /var/lib/m17-dashboard/files "$dest"/files
+
+	install -Dm644 "$srcdir"/nginx-site.conf "$pkgdir"/usr/share/$pkgname/nginx-site.conf
+	install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+}
+
+sha512sums="
+5bf68748ab46abb52984086a5216c95af2b9facc8f692a0d0dd5ab8cc5f0ce0affb4aeb723a5873c56d5cd20474ea4a935474fa0f1c2b2951d45207f9f1baebb  rpi-dashboard-57cd8591da9cd68b313c7352111b717ca8ca12b4.tar.gz
+576fdba1b8370be728ec02fc4d10c1ca3031b4fba96461b1a7224bffaba36549172686ad43313029f3acfd8650273fd63f9b44745704c55dc32f91d03a2400eb  nginx-site.conf
+"

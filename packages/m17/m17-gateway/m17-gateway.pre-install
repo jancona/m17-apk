@@ -1,0 +1,13 @@
+#!/bin/sh
+# m17-gateway runs as its own user, with access to the HAT's serial port,
+# GPIO, SPI and sound devices. Members of m17-gateway-control (e.g. the web
+# dashboard) may edit its configuration.
+for g in gpio spi m17-gateway m17-gateway-control; do
+	addgroup -S "$g" 2>/dev/null
+done
+adduser -S -D -H -h /opt/m17/m17-gateway -s /sbin/nologin -G m17-gateway \
+	-g "M17 gateway" m17-gateway 2>/dev/null
+for g in dialout gpio spi audio; do
+	addgroup m17-gateway "$g" 2>/dev/null
+done
+exit 0

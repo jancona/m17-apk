@@ -1,0 +1,61 @@
+# Contributor: Jim Ancona, N1ADJ <jancona@users.noreply.github.com>
+# Maintainer: Jim Ancona, N1ADJ <jancona@users.noreply.github.com>
+pkgname=m17-gateway
+pkgver=0.9.3
+pkgrel=0
+pkgdesc="M17 hotspot gateway for CC1200, SX1255 and MMDVM radio HATs"
+url="https://github.com/jancona/m17"
+arch="aarch64"
+license="Apache-2.0"
+makedepends="go"
+install="$pkgname.pre-install $pkgname.post-install"
+subpackages="$pkgname-openrc"
+source="$pkgname-$pkgver.tar.gz::https://github.com/jancona/m17/archive/refs/tags/v$pkgver.tar.gz
+	m17-gateway.initd
+	"
+builddir="$srcdir/m17-$pkgver"
+# The build downloads Go modules (and, with GOTOOLCHAIN=auto, the Go
+# version go.mod asks for when Alpine's is older), all checked against the
+# Go checksum database
+# !fhs: installed under /opt/m17, where the Debian package puts it and
+# rpi-dashboard expects it
+options="net !fhs"
+
+export GOTOOLCHAIN=auto
+export GOFLAGS="$GOFLAGS -trimpath -mod=readonly -modcacherw"
+export CGO_ENABLED=0
+
+build() {
+	cd cmd/m17-gateway
+	go build -ldflags "-s -w" -o m17-gateway .
+}
+
+check() {
+	# The protocol code at the module root; the gateway itself needs a HAT
+	go test .
+}
+
+package() {
+	install -Dm755 cmd/m17-gateway/m17-gateway "$pkgdir"/opt/m17/m17-gateway/m17-gateway
+	cp -r cmd/m17-gateway/audio "$pkgdir"/opt/m17/m17-gateway/audio
+	find "$pkgdir"/opt/m17/m17-gateway/audio -type f -exec chmod 644 {} +
+
+	# Defaults; m17-gateway.post-install copies them into place the first
+	# time, so upgrades never overwrite the user's configuration or hosts
+	local p=cmd/m17-gateway/packaging
+	install -Dm644 $p/m17-gateway.ini.sample "$pkgdir"/usr/share/m17-gateway/m17-gateway.ini.sample
+	install -Dm644 $p/M17Hosts.txt "$pkgdir"/usr/share/m17-gateway/M17Hosts.txt
+	install -Dm644 $p/OverrideHosts.txt "$pkgdir"/usr/share/m17-gateway/OverrideHosts.txt
+
+	install -Dm755 "$srcdir"/m17-gateway.initd "$pkgdir"/etc/init.d/m17-gateway
+	install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+
+	# The Go toolchain fetched by GOTOOLCHAIN=auto is unpacked read-only
+	# (-modcacherw doesn't cover it); let abuild clean it up
+	chmod -R u+w "$(go env GOMODCACHE)" 2>/dev/null || true
+}
+
+sha512sums="
+0a8a26f21e9ea7ee8bb96d8bc68e159b583464b19b9ea9fb843538c46a97c12cd349ad86445d7f23cad6518bab3b07ac38333b5d7056847a4a1cf5af022b0d26  m17-gateway-0.9.3.tar.gz
+26432188c187b4f46d68441950f89d62d69845ebe94bbeb681363fed6f414bb24bb6c5b74e2478bd5ee3b34ef4ef50c612fb01c80f4f4f1aadb7ea131f5c6673  m17-gateway.initd
+"
