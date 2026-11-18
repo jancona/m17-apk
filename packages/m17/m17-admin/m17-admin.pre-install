@@ -1,0 +1,8 @@
+#!/bin/sh
+# m17-admin runs as its own user. dialout: it identifies the radio HAT on
+# the serial port (with the gateway stopped).
+addgroup -S m17-admin 2>/dev/null
+adduser -S -D -H -h /var/lib/m17-admin -s /sbin/nologin -G m17-admin \
+	-g "M17 setup wizard" m17-admin 2>/dev/null
+addgroup m17-admin dialout 2>/dev/null
+exit 0

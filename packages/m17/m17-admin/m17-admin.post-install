@@ -1,0 +1,7 @@
+#!/bin/sh
+# Its state (the wizard's progress, which may hold a WiFi password until
+# the settings are applied) is readable by m17-admin only
+mkdir -p /var/lib/m17-admin
+chown m17-admin:m17-admin /var/lib/m17-admin
+chmod 0700 /var/lib/m17-admin
+exit 0

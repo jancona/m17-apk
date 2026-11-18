@@ -13,6 +13,7 @@
 #   m17-gateway           latest release of jancona/m17 (vX.Y.Z)
 #   m17-firmware-cc1200   latest release of M17-Project/CC1200_HAT-fw
 #   rpi-dashboard         latest commit; pkgver <VERSION file>_git<date>
+#   m17-admin             latest commit; pkgver 0_git<date> (until it has releases)
 #   m17-firmware-mmdvm-hs last commit that changed release/ in MMDVM_HS
 #   m17-firmware-mmdvm    last commit that changed release/ in MMDVM
 #   m17-sx1255-overlay    last commit that changed the .dtbo
@@ -118,6 +119,7 @@ check_files() {
 update_release m17-gateway jancona/m17
 update_release m17-firmware-cc1200 M17-Project/CC1200_HAT-fw
 update_snapshot rpi-dashboard M17-Project/rpi-dashboard "" VERSION
+update_snapshot m17-admin jancona/m17-admin "" 0
 update_snapshot m17-firmware-mmdvm-hs M17-Project/MMDVM_HS release 0
 update_snapshot m17-firmware-mmdvm M17-Project/MMDVM release 0
 update_snapshot m17-sx1255-overlay M17-Project/RaspberryPi_I2S_Slave genericstereoaudiocodec.dtbo 0

@@ -1,0 +1,47 @@
+# Maintainer: Jim Ancona, N1ADJ <jancona@users.noreply.github.com>
+pkgname=m17-admin
+_commit=c95d7e1549b3a78d62379ad97a99855581008af0
+pkgver=0_git20261118
+pkgrel=0
+pkgdesc="Setup wizard for M17 hotspots running m17-hotspot-os"
+url="https://github.com/jancona/m17-admin"
+arch="aarch64"
+license="Apache-2.0"
+# It shares rpi-dashboard's admin password, and its root actions go
+# through m17-hotspot-os's admin helper (with the image's doas rule)
+depends="rpi-dashboard doas"
+makedepends="go"
+install="$pkgname.pre-install $pkgname.post-install"
+subpackages="$pkgname-openrc"
+source="$pkgname-$_commit.tar.gz::https://github.com/jancona/m17-admin/archive/$_commit.tar.gz
+	m17-admin.initd
+	"
+builddir="$srcdir/$pkgname-$_commit"
+# The build downloads Go modules (and the Go version go.mod asks for, with
+# GOTOOLCHAIN=auto), checked against the Go checksum database
+options="net"
+
+export GOTOOLCHAIN=auto
+export GOFLAGS="$GOFLAGS -trimpath -mod=readonly -modcacherw"
+export CGO_ENABLED=0
+
+build() {
+	go build -ldflags "-s -w" -o m17-admin ./cmd/m17-admin
+}
+
+check() {
+	go test ./...
+}
+
+package() {
+	install -Dm755 m17-admin "$pkgdir"/usr/bin/m17-admin
+	install -Dm755 "$srcdir"/m17-admin.initd "$pkgdir"/etc/init.d/m17-admin
+	install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+	# The Go toolchain fetched by GOTOOLCHAIN=auto is unpacked read-only
+	chmod -R u+w "$(go env GOMODCACHE)" 2>/dev/null || true
+}
+
+sha512sums="
+98f9b1519f8b20727f7a4694886d1b70e0ae34897a0b097d35b8dac1334c3e9ee3f9835da2956595da5aae5a3773270805695715864ed589a6b218cc474628e5  m17-admin-c95d7e1549b3a78d62379ad97a99855581008af0.tar.gz
+a9520716a240cfe71abe5a84831d9cce9c5012c98da3915eed4bc91e76f2a08b740f282dc83c189e791e29afcab19728da2b5ca9568244f369afc276693ec8f5  m17-admin.initd
+"

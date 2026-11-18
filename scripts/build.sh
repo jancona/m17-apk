@@ -25,6 +25,7 @@ BUILDER=builder
 mkdir -p "$OUT"
 OUT=$(cd "$OUT" && pwd)
 
+apk update -q >/dev/null
 apk add -q --no-cache alpine-sdk >/dev/null
 id "$BUILDER" >/dev/null 2>&1 || adduser -D -G abuild "$BUILDER"
 # Members of the abuild group install build dependencies through
@@ -58,6 +59,15 @@ if [ $# -eq 0 ]; then
 	# shellcheck disable=SC2046  # package names have no spaces
 	set -- $(cd "$HOME_DIR/src" && ls -d */* | sed 's|.*/||')
 fi
+# Packages that depend on others in this repository go last, so abuild
+# finds their dependencies in the repository it is building
+deps_last="m17-admin"
+first="" last=""
+for p in "$@"; do
+	case " $deps_last " in *" $p "*) last="$last $p" ;; *) first="$first $p" ;; esac
+done
+# shellcheck disable=SC2086  # package names have no spaces
+set -- $first $last
 
 for pkg in "$@"; do
 	dir=$(cd "$HOME_DIR/src" && ls -d */"$pkg" 2>/dev/null | head -1)

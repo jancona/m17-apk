@@ -1,0 +1,30 @@
+#!/sbin/openrc-run
+# shellcheck shell=sh
+# m17-admin - the M17 hotspot's setup wizard, behind nginx at /setup/
+
+description="M17 hotspot setup wizard"
+
+: "${M17_ADMIN_LISTEN:=127.0.0.1:8090}"
+: "${M17_ADMIN_STATE:=/var/lib/m17-admin}"
+
+supervisor=supervise-daemon
+command=/usr/bin/m17-admin
+command_args="-listen $M17_ADMIN_LISTEN -state-dir $M17_ADMIN_STATE"
+command_user="m17-admin:m17-admin"
+output_log="/var/log/m17-admin/m17-admin.log"
+error_log="/var/log/m17-admin/m17-admin.log"
+respawn_delay=5
+respawn_max=0
+
+depend() {
+	need localmount
+	use net logger
+	after m17os-bindmounts
+}
+
+start_pre() {
+	# /var/log is a tmpfs on m17-hotspot-os
+	checkpath -d -o m17-admin:m17-admin -m 0755 /var/log/m17-admin
+	checkpath -f -o m17-admin:m17-admin -m 0644 /var/log/m17-admin/m17-admin.log
+	checkpath -d -o m17-admin:m17-admin -m 0700 "$M17_ADMIN_STATE"
+}
