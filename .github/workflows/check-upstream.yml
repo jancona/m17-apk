@@ -12,6 +12,7 @@ concurrency:
 permissions:
   contents: write
   pull-requests: write
+  statuses: write   # the build result on the pull request
 
 env:
   ALPINE_VERSION: "3.23"
@@ -78,3 +79,15 @@ jobs:
             gh pr create --base main --head "$BRANCH" \
               --title "Upstream updates: ${{ steps.check.outputs.changed }}" --body-file pr-body.md
           fi
+
+      # build.yml doesn't run for this bot's pushes or pull requests (see
+      # its triggers), so the pull request's check is this run's result
+      - name: Report the build on the pull request
+        if: steps.check.outputs.changed != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api "repos/${{ github.repository }}/statuses/$(git rev-parse HEAD)" \
+            -f state=success -f context="Build and install test" \
+            -f description="Built and test-installed before the pull request was opened" \
+            -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >/dev/null
