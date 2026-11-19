@@ -1,9 +1,14 @@
 name: Build packages
 
+# Every branch is built: main is signed and published, other branches
+# (and so pull requests from them) build with a throwaway key as a check.
+# Not "pull_request": GitHub holds the runs of pull requests opened with
+# GITHUB_TOKEN (check-upstream's) for an approval, then fails them when
+# the pull request is merged. Pushes with GITHUB_TOKEN start no workflows,
+# so upstream-updates isn't built here; check-upstream builds and tests it
+# before opening its pull request, and reports that on the pull request.
 on:
   push:
-    branches: [main]
-  pull_request:
   workflow_dispatch:
 
 concurrency:
@@ -23,9 +28,9 @@ jobs:
       # main is signed with the repository key and published.
       - name: Build
         env:
-          ABUILD_PRIVATE_KEY: ${{ github.ref == 'refs/heads/main' && github.event_name != 'pull_request' && secrets.ABUILD_PRIVATE_KEY || '' }}
+          ABUILD_PRIVATE_KEY: ${{ github.ref == 'refs/heads/main' && secrets.ABUILD_PRIVATE_KEY || '' }}
         run: |
-          if [ "${{ github.ref }}" = "refs/heads/main" ] && [ "${{ github.event_name }}" != "pull_request" ] && [ -z "$ABUILD_PRIVATE_KEY" ]; then
+          if [ "${{ github.ref }}" = "refs/heads/main" ] && [ -z "$ABUILD_PRIVATE_KEY" ]; then
             echo "::error::The ABUILD_PRIVATE_KEY secret is not set, so main can't be signed and published"
             exit 1
           fi
@@ -38,7 +43,7 @@ jobs:
         run: sh scripts/install-test.sh out
 
       - name: Arrange the site
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main'
         run: |
           mkdir -p site/v$ALPINE_VERSION
           sudo cp -r out/m17 site/v$ALPINE_VERSION/
@@ -48,13 +53,13 @@ jobs:
           find site -type f | sort
 
       - uses: actions/upload-pages-artifact@v4
-        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        if: github.ref == 'refs/heads/main'
         with:
           path: site
 
   publish:
     needs: build
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     permissions:
       pages: write

@@ -13,7 +13,6 @@ permissions:
   contents: write
   pull-requests: write
   statuses: write   # the build result on the pull request
-  actions: write    # cancel the pull request's own build run
 
 env:
   ALPINE_VERSION: "3.23"
@@ -81,10 +80,8 @@ jobs:
               --title "Upstream updates: ${{ steps.check.outputs.changed }}" --body-file pr-body.md
           fi
 
-      # GitHub holds the build run of a pull request opened by this bot
-      # until someone approves it, and fails it when the pull request is
-      # merged first. This run has already built and test-installed the
-      # packages: show that on the pull request, and cancel the held run.
+      # build.yml doesn't run for this bot's pushes or pull requests (see
+      # its triggers), so the pull request's check is this run's result
       - name: Report the build on the pull request
         if: steps.check.outputs.changed != ''
         env:
@@ -94,14 +91,3 @@ jobs:
             -f state=success -f context="Build and install test" \
             -f description="Built and test-installed before the pull request was opened" \
             -f target_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" >/dev/null
-          ids=""
-          for i in $(seq 12); do
-            ids=$(gh run list --workflow build.yml --branch "$BRANCH" --event pull_request \
-              --status action_required --json databaseId -q '.[].databaseId')
-            [ -n "$ids" ] && break
-            sleep 5
-          done
-          for id in $ids; do
-            gh run cancel "$id" && echo "Cancelled the held build run $id" ||
-              echo "::warning::Couldn't cancel the held build run $id"
-          done
