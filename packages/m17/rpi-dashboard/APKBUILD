@@ -2,7 +2,7 @@
 pkgname=rpi-dashboard
 _commit=57cd8591da9cd68b313c7352111b717ca8ca12b4
 pkgver=1.4.1_git20261108
-pkgrel=0
+pkgrel=1
 pkgdesc="Web dashboard for M17 hotspots running m17-gateway"
 url="https://github.com/M17-Project/rpi-dashboard"
 arch="noarch"
@@ -31,6 +31,16 @@ package() {
 	rm -rf "$dest"/files "$dest"/config.php
 	ln -s /var/lib/m17-dashboard/config.php "$dest"/config.php
 	ln -s /var/lib/m17-dashboard/files "$dest"/files
+
+	# A "Setup" entry in the sidebar for the setup wizard (m17-admin, at
+	# /setup/), after "Settings". If the sidebar changes upstream the
+	# dashboard still works, just without the link.
+	if grep -q 'href="config_dashboard.php"' "$dest"/header.php; then
+		sed -i '/href="config_dashboard.php"/a\
+    <a href="/setup/"><span class="icon">🛠️</span>Setup</a>' "$dest"/header.php
+	else
+		warning "header.php has no Settings link: no Setup link added"
+	fi
 
 	install -Dm644 "$srcdir"/nginx-site.conf "$pkgdir"/usr/share/$pkgname/nginx-site.conf
 	install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
