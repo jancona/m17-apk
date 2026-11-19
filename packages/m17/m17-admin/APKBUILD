@@ -1,8 +1,8 @@
 # Maintainer: Jim Ancona, N1ADJ <jancona@users.noreply.github.com>
 pkgname=m17-admin
-_commit=c350366d2b8587e70b24cfec71dd4c2d842b4f95
+_commit=c6ad59328e8197e081f88e77c95f3e14277a5bab
 pkgver=0_git20261119
-pkgrel=1
+pkgrel=2
 pkgdesc="Setup wizard for M17 hotspots running m17-hotspot-os"
 url="https://github.com/jancona/m17-admin"
 arch="aarch64"
@@ -42,6 +42,6 @@ package() {
 }
 
 sha512sums="
-793ba4ef8fe75c0ddaaf51d64c1794d4fe1f87444f3f24674810df82915991b6843e21852cf9227703ccb14c15e306feac3785af2c4da25627ebb5ac8050436e  m17-admin-c350366d2b8587e70b24cfec71dd4c2d842b4f95.tar.gz
+6394a7adff60ccaaace58c665e521906f9ab3fd2c2b1a66c53e38db4b90ccfc5f85a34e28a152aa082d9189ebba90542666b9ea61f30adbc43c1b0781f1bec8e  m17-admin-c6ad59328e8197e081f88e77c95f3e14277a5bab.tar.gz
 a9520716a240cfe71abe5a84831d9cce9c5012c98da3915eed4bc91e76f2a08b740f282dc83c189e791e29afcab19728da2b5ca9568244f369afc276693ec8f5  m17-admin.initd
 "
