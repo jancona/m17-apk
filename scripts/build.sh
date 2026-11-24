@@ -61,7 +61,7 @@ if [ $# -eq 0 ]; then
 fi
 # Packages that depend on others in this repository go last, so abuild
 # finds their dependencies in the repository it is building
-deps_last="m17-admin"
+deps_last="m17-web"
 first="" last=""
 for p in "$@"; do
 	case " $deps_last " in *" $p "*) last="$last $p" ;; *) first="$first $p" ;; esac

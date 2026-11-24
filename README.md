@@ -12,7 +12,7 @@ Alpine Linux packages for [M17](https://m17project.org/) hotspots: m17-gateway, 
 | `m17-firmware-cc1200` | [CC1200 HAT firmware](https://github.com/M17-Project/CC1200_HAT-fw) (latest release) |
 | `m17-firmware-mmdvm-hs` | [MMDVM_HS](https://github.com/M17-Project/MMDVM_HS) firmware: MMDVM_HS_Hat, MMDVM_HS_Dual_Hat (and `-12mhz`), generic GPIO boards |
 | `m17-firmware-mmdvm` | [MMDVM](https://github.com/M17-Project/MMDVM) firmware: Repeater-Builder, MMDVM_RPT_Hat, ZUM MMDVM-Pi, Nucleo |
-| `m17-admin` (+ `-openrc`) | The [setup wizard](https://github.com/jancona/m17-admin), built from source; runs as its own user on 127.0.0.1:8090 |
+| `m17-web` (+ `-openrc`) | The [web UI](https://github.com/jancona/m17-web) (setup wizard; was m17-admin), built from source; runs as its own user on 127.0.0.1:8090 |
 | `m17-sx1255-overlay` | [`genericstereoaudiocodec.dtbo`](https://github.com/M17-Project/RaspberryPi_I2S_Slave) for the SX1255 HAT's I2S codec |
 
 Firmware is installed under `/usr/share/m17-firmware/<family>/`; flashing it is up to the user (or, later, the hotspot's setup wizard).
