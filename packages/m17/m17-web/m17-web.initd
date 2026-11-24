@@ -1,0 +1,30 @@
+#!/sbin/openrc-run
+# shellcheck shell=sh
+# m17-web - the M17 hotspot's web UI (setup wizard now), behind nginx at /setup/
+
+description="M17 hotspot web UI"
+
+: "${M17_WEB_LISTEN:=127.0.0.1:8090}"
+: "${M17_WEB_STATE:=/var/lib/m17-web}"
+
+supervisor=supervise-daemon
+command=/usr/bin/m17-web
+command_args="-listen $M17_WEB_LISTEN -state-dir $M17_WEB_STATE"
+command_user="m17-web:m17-web"
+output_log="/var/log/m17-web/m17-web.log"
+error_log="/var/log/m17-web/m17-web.log"
+respawn_delay=5
+respawn_max=0
+
+depend() {
+	need localmount
+	use net logger
+	after m17os-bindmounts
+}
+
+start_pre() {
+	# /var/log is a tmpfs on m17-hotspot-os
+	checkpath -d -o m17-web:m17-web -m 0755 /var/log/m17-web
+	checkpath -f -o m17-web:m17-web -m 0644 /var/log/m17-web/m17-web.log
+	checkpath -d -o m17-web:m17-web -m 0700 "$M17_WEB_STATE"
+}

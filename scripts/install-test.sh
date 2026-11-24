@@ -9,7 +9,7 @@ exec docker run --rm --platform linux/arm64 -v "$OUT":/repo:ro "alpine:${ALPINE_
 	cp /repo/*.rsa.pub /etc/apk/keys/
 	echo /repo/m17 >> /etc/apk/repositories
 	apk add -q --no-cache rpi-dashboard m17-gateway-openrc m17-firmware-cc1200 \
-		m17-firmware-mmdvm m17-firmware-mmdvm-hs m17-sx1255-overlay m17-admin m17-admin-openrc
+		m17-firmware-mmdvm m17-firmware-mmdvm-hs m17-sx1255-overlay m17-web m17-web-openrc
 	/opt/m17/m17-gateway/m17-gateway -h 2>&1 | grep -q -- -config
 	test -f /etc/m17-gateway/m17-gateway.ini
 	test -L /etc/m17-gateway.ini
@@ -19,9 +19,9 @@ exec docker run --rm --platform linux/arm64 -v "$OUT":/repo:ro "alpine:${ALPINE_
 	test -n "$(ls /usr/share/m17-firmware/mmdvm/)"
 	test -f /usr/share/m17-firmware/cc1200/CC1200_HAT-fw.bin
 	apk info -v | grep -E "^(m17|rpi-dashboard)" | sort
-	/usr/bin/m17-admin -h 2>&1 | grep -q -- -state-dir
-	id m17-admin | grep -q dialout
-	test "$(stat -c %U:%a /var/lib/m17-admin)" = "m17-admin:700"
-	test -x /etc/init.d/m17-admin
+	/usr/bin/m17-web -h 2>&1 | grep -q -- -state-dir
+	id m17-web | grep -q dialout
+	test "$(stat -c %U:%a /var/lib/m17-web)" = "m17-web:700"
+	test -x /etc/init.d/m17-web
 	echo "install test passed"
 '

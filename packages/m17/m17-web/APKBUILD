@@ -1,0 +1,50 @@
+# Maintainer: Jim Ancona, N1ADJ <jancona@users.noreply.github.com>
+pkgname=m17-web
+_commit=2b1dc8d62277071bbc7f86287eccbd8513d5beb0
+pkgver=0_git20261124
+pkgrel=0
+pkgdesc="Web UI (setup wizard, later admin pages and dashboard) for M17 hotspots running m17-hotspot-os"
+# Renamed from m17-admin (2026-11). A hotspot gets it with its next OS
+# release; the old package keeps its files until then.
+replaces="m17-admin"
+url="https://github.com/jancona/m17-web"
+arch="aarch64"
+license="Apache-2.0"
+# It shares rpi-dashboard's admin password, and its root actions go
+# through m17-hotspot-os's admin helper (with the image's doas rule)
+depends="rpi-dashboard doas"
+makedepends="go"
+install="$pkgname.pre-install $pkgname.post-install"
+subpackages="$pkgname-openrc"
+source="$pkgname-$_commit.tar.gz::https://github.com/jancona/m17-web/archive/$_commit.tar.gz
+	m17-web.initd
+	"
+builddir="$srcdir/$pkgname-$_commit"
+# The build downloads Go modules (and the Go version go.mod asks for, with
+# GOTOOLCHAIN=auto), checked against the Go checksum database
+options="net"
+
+export GOTOOLCHAIN=auto
+export GOFLAGS="$GOFLAGS -trimpath -mod=readonly -modcacherw"
+export CGO_ENABLED=0
+
+build() {
+	go build -ldflags "-s -w" -o m17-web ./cmd/m17-web
+}
+
+check() {
+	go test ./...
+}
+
+package() {
+	install -Dm755 m17-web "$pkgdir"/usr/bin/m17-web
+	install -Dm755 "$srcdir"/m17-web.initd "$pkgdir"/etc/init.d/m17-web
+	install -Dm644 LICENSE "$pkgdir"/usr/share/licenses/$pkgname/LICENSE
+	# The Go toolchain fetched by GOTOOLCHAIN=auto is unpacked read-only
+	chmod -R u+w "$(go env GOMODCACHE)" 2>/dev/null || true
+}
+
+sha512sums="
+30273d23c9166783b6b66cda035ecb4898b1ed81fd5dece6f3dd8c094b8e7f6036ccbc881f4d1773787b65256c2fd504093847c42539d3a9e3ca221733359f90  m17-web-2b1dc8d62277071bbc7f86287eccbd8513d5beb0.tar.gz
+f2be8443f8daa967419341caa4d8bdd3a52df6af6b8be8718106e2ab3ad3267733e1ef6bdec48fc8d8054816138945b4cf8207e812e905a52d0b3b3bdeda0f35  m17-web.initd
+"
