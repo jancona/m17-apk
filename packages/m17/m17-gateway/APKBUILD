@@ -1,7 +1,7 @@
 # Contributor: Jim Ancona, N1ADJ <jancona@users.noreply.github.com>
 # Maintainer: Jim Ancona, N1ADJ <jancona@users.noreply.github.com>
 pkgname=m17-gateway
-pkgver=0.9.9
+pkgver=0.10.0
 pkgrel=0
 pkgdesc="M17 hotspot gateway for CC1200, SX1255 and MMDVM radio HATs"
 url="https://github.com/jancona/m17"
@@ -56,6 +56,6 @@ package() {
 }
 
 sha512sums="
-89289dd64b7d46e4f08a244a2dff97ba5d2d59514768695bfbaa94f9db0cecab28548bfd908510cb33dc845081061d277bed76f5551942e27d92012845ca6535  m17-gateway-0.9.9.tar.gz
+ac595397f9a699069f705749353ba4fabcb998748544cc28854c8dda40a7a74c4160267ebe3f6468916661bab7b3062b2b84d6da6670c987c2d61c567be199ca  m17-gateway-0.10.0.tar.gz
 26432188c187b4f46d68441950f89d62d69845ebe94bbeb681363fed6f414bb24bb6c5b74e2478bd5ee3b34ef4ef50c612fb01c80f4f4f1aadb7ea131f5c6673  m17-gateway.initd
 "
