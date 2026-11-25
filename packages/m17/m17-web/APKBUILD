@@ -2,17 +2,18 @@
 pkgname=m17-web
 _commit=39108183e29e03e8a3322c9ebeac74321f7a6e31
 pkgver=0_git20261125
-pkgrel=6
-pkgdesc="Web UI (setup wizard, later admin pages and dashboard) for M17 hotspots running m17-hotspot-os"
+pkgrel=7
+pkgdesc="Web UI (dashboard, setup wizard and admin pages) for M17 hotspots running m17-hotspot-os"
 # Renamed from m17-admin (2026-11). A hotspot gets it with its next OS
 # release; the old package keeps its files until then.
 replaces="m17-admin"
 url="https://github.com/jancona/m17-web"
 arch="aarch64"
 license="Apache-2.0"
-# It shares rpi-dashboard's admin password, and its root actions go
-# through m17-hotspot-os's admin helper (with the image's doas rule)
-depends="rpi-dashboard doas"
+# Its root actions go through m17-hotspot-os's admin helper (with the
+# image's doas rule). It replaced rpi-dashboard, whose admin password it
+# reads until it has its own, so it no longer needs it installed.
+depends="doas"
 makedepends="go"
 install="$pkgname.pre-install $pkgname.post-install"
 subpackages="$pkgname-openrc"
