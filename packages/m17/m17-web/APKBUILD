@@ -1,8 +1,8 @@
 # Maintainer: Jim Ancona, N1ADJ <jancona@users.noreply.github.com>
 pkgname=m17-web
-_commit=ca33673f724370b98649c77ab502da838f8270ff
+_commit=eb21913c3936d58c79596a2205fc6cf78a4004d8
 pkgver=0_git20261125
-pkgrel=4
+pkgrel=5
 pkgdesc="Web UI (setup wizard, later admin pages and dashboard) for M17 hotspots running m17-hotspot-os"
 # Renamed from m17-admin (2026-11). A hotspot gets it with its next OS
 # release; the old package keeps its files until then.
@@ -45,6 +45,6 @@ package() {
 }
 
 sha512sums="
-75e969ce0c8481bfa45f32b091a398998138297ce99ae437e6c5a5b48cd54437ad9a97e4cb22c7bad8b86f5694ddb74a5fbae4c178b4c5d8e45be6ebe0d869e1  m17-web-ca33673f724370b98649c77ab502da838f8270ff.tar.gz
+017970d832c20e34a5762a79fad05bb069b2de7c3538291c4332ea33e232d61c11ae0a39eb075efdfab0fc86529c6efe97456ca2fffcd32ddd6ad964cb24246d  m17-web-eb21913c3936d58c79596a2205fc6cf78a4004d8.tar.gz
 f2be8443f8daa967419341caa4d8bdd3a52df6af6b8be8718106e2ab3ad3267733e1ef6bdec48fc8d8054816138945b4cf8207e812e905a52d0b3b3bdeda0f35  m17-web.initd
 "
